@@ -1,0 +1,16 @@
+[package]
+name = "ast-shaper"
+edition = "2021"
+authors = ["Alexis Bekhdadi <alexis@bekhdadi.com>"]
+license = "Apache-2.0"
+description = "AST-Shaper : A set of utilities for shaping, transforming, and generating Rust code with syn. "
+repository = "https://github.com/midoriiro/ast-shaper.git"
+documentation = ""
+keywords = ["ast", "macro", "syn", "tools"]
+version = "0.1.0"
+
+[dependencies]
+syn = { version = "2.0", features = ["full", "derive", "extra-traits"] }
+quote = "1.0"
+prettyplease = "0.2"
+itertools = "0.14"
