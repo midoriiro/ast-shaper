@@ -1,7 +1,12 @@
-pub mod path;
-pub mod statement;
-pub mod punctuated;
+pub mod name_conventions;
+#[cfg(test)]
+#[path = "./naming_conventions_test.rs"]
+mod naming_conventions_test;
 
+pub mod parsing;
+pub mod path;
+pub mod punctuated;
+pub mod statement;
 
 use crate::items::source_file::SourceFile;
 use crate::utils::path::Path;
@@ -15,38 +20,6 @@ macro_rules! debug {
     ($($tokens: tt)*) => {
         println!("cargo:warning={}", format!($($tokens)*))
     }
-}
-
-pub fn to_pascal_case(name: &str) -> String {
-    name.split("_")
-        .map(|word| {
-            let mut chars = word.chars();
-            match chars.next() {
-                Some(first_char) => {
-                    let first_char_upper = first_char.to_uppercase().to_string();
-                    let rest_of_word = chars.as_str().to_lowercase();
-                    format!("{}{}", first_char_upper, rest_of_word)
-                },
-                None => String::new(),
-            }
-        })
-        .collect::<String>()
-}
-
-pub fn generate_source_code(source_file: &mut SourceFile, output_path: &std::path::Path, output_filename: &str) {
-    let items = source_file.modules.iter()
-        .flat_map(|module| module.decompose())
-        .collect();
-    let output_file = syn::File {
-        shebang: None,
-        attrs: source_file.attributes.clone(),
-        items
-    };
-    let code = prettyplease::unparse(&output_file);
-    fs::create_dir_all(&output_path).expect("Unable to create output directory");
-    let path = output_path.join(output_filename);
-    fs::write(path, code)
-        .expect("Unable to write generated file");
 }
 
 pub fn create_ident(ident: impl Into<String>) -> Ident {
