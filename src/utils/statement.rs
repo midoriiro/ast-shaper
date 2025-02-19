@@ -5,7 +5,7 @@ use quote::ToTokens;
 use std::collections::HashMap;
 use syn::punctuated::Punctuated;
 use syn::spanned::Spanned;
-use syn::{Block, ExprAssign, ExprBlock, ExprCall, ExprField, ExprIf, ExprLet, ExprLit, ExprMacro, ExprMethodCall, ExprPath, ExprReference, ExprStruct, FieldValue, Lit, LitStr, Local, LocalInit, Macro, MacroDelimiter, Member, Pat, PatIdent, PatTupleStruct, Stmt, StmtMacro, Token};
+use syn::{Block, ExprAssign, ExprBlock, ExprCall, ExprClosure, ExprField, ExprIf, ExprLet, ExprLit, ExprMacro, ExprMethodCall, ExprPath, ExprReference, ExprStruct, FieldValue, Lit, LitStr, Local, LocalInit, Macro, MacroDelimiter, Member, Pat, PatIdent, PatTupleStruct, PatType, ReturnType, Stmt, StmtMacro, Token};
 
 #[derive(Debug, Clone)]
 pub enum Expr {
@@ -387,8 +387,7 @@ impl Statement {
             Some(Default::default())
         )
     }
-
-    /// Expression, with or without trailing semicolon.
+    
     pub fn without_trailling_semi_colon(statement: Stmt) -> Stmt {
         let expression = match statement {
             Stmt::Expr(value, _) => value,
@@ -397,6 +396,33 @@ impl Statement {
         Stmt::Expr(
             expression,
             None
+        )
+    }
+    
+    pub fn closure(
+        arguments: 
+        Vec<Pat>, 
+        return_type: ReturnType, 
+        body: Expr
+    ) -> Stmt {
+        let arguments = arguments.iter()
+            .map(|argument| argument.clone())
+            .collect::<Punctuated<Pat, Token![,]>>();
+        Stmt::Expr(
+            syn::Expr::Closure(ExprClosure {
+                attrs: vec![],
+                lifetimes: None,
+                constness: None,
+                movability: None,
+                asyncness: None,
+                capture: None,
+                or1_token: Default::default(),
+                inputs: arguments,
+                or2_token: Default::default(),
+                output: return_type,
+                body: Box::new(body.to_expr()),
+            }),
+            Some(Default::default())
         )
     }
 }
