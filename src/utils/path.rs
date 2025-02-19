@@ -1,18 +1,18 @@
 use crate::error::Error;
+use crate::functions;
 use crate::utils::create_ident;
 use crate::utils::punctuated::PunctuatedExt;
 use itertools::Itertools;
 use quote::ToTokens;
 use std::collections::VecDeque;
-use std::fmt::{Display, Formatter};
+use std::fmt::{Debug, Display, Formatter};
 use std::path::MAIN_SEPARATOR_STR;
 use syn::punctuated::{Iter, IterMut, Punctuated};
 use syn::spanned::Spanned;
 use syn::token::{Comma, PathSep};
 use syn::{AngleBracketedGenericArguments, GenericArgument, Ident, ParenthesizedGenericArguments, PathArguments, PathSegment, ReturnType, Token, Type, TypePath};
-use crate::functions;
 
-#[derive(Debug, Clone)]
+#[derive(Clone)]
 pub struct Path {
     pub(super) segments: Punctuated<PathSegment, Token![::]>
 }
@@ -244,6 +244,12 @@ impl Display for Path {
             }
             Err(_) => Ok(())
         }
+    }
+}
+
+impl Debug for Path {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}", self)
     }
 }
 

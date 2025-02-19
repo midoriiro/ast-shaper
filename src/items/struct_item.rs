@@ -6,8 +6,8 @@ use crate::walkers::Context;
 use syn::{ItemImpl, ItemStruct};
 
 pub struct StructItem {
-    item: ItemStruct,
-    impl_items: Vec<ImplementationItem>,
+    pub item: ItemStruct,
+    pub impl_items: Vec<ImplementationItem>,
 }
 
 impl StructItem {
@@ -18,19 +18,7 @@ impl StructItem {
                 .map(|item| ImplementationItem::new(item.clone()))
                 .collect(),
         }
-    }
-
-    pub fn item(&self) -> &ItemStruct {
-        &self.item
-    }
-
-    pub fn item_mut(&mut self) -> &mut ItemStruct {
-        &mut self.item
-    }
-
-    pub fn impl_items_mut(&mut self) -> &mut Vec<ImplementationItem> {
-        &mut self.impl_items
-    }
+    }    
 }
 
 impl ItemTrait for StructItem {

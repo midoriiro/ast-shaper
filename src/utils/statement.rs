@@ -1,10 +1,11 @@
 use crate::utils::create_ident;
 use crate::utils::path::Path;
+use crate::utils::punctuated::PunctuatedExt;
 use quote::ToTokens;
 use std::collections::HashMap;
 use syn::punctuated::Punctuated;
 use syn::spanned::Spanned;
-use syn::{Block, ExprAssign, ExprCall, ExprField, ExprIf, ExprLet, ExprLit, ExprMacro, ExprMethodCall, ExprPath, ExprReference, ExprStruct, FieldValue, Lit, LitStr, Local, LocalInit, Macro, MacroDelimiter, Member, Pat, PatIdent, PatPath, Stmt, StmtMacro, Token};
+use syn::{Block, ExprAssign, ExprBlock, ExprCall, ExprField, ExprIf, ExprLet, ExprLit, ExprMacro, ExprMethodCall, ExprPath, ExprReference, ExprStruct, FieldValue, Lit, LitStr, Local, LocalInit, Macro, MacroDelimiter, Member, Pat, PatIdent, PatTupleStruct, Stmt, StmtMacro, Token};
 
 #[derive(Debug, Clone)]
 pub enum Expr {
@@ -129,10 +130,18 @@ impl Statement {
                 cond: Box::new(syn::Expr::Let(ExprLet {
                     attrs: vec![],
                     let_token: Default::default(),
-                    pat: Box::new(Pat::Path(PatPath {
+                    pat: Box::new(Pat::TupleStruct(PatTupleStruct {
                         attrs: vec![],
                         qself: None,
-                        path: Path::new("Some").with_parameter(value).to_syn_path(),
+                        path: Path::new("Some").to_syn_path(),
+                        paren_token: Default::default(),
+                        elems: Punctuated::single(Pat::Ident(PatIdent {
+                            attrs: vec![],
+                            by_ref: None,
+                            mutability: None,
+                            ident: create_ident(value.to_string()),
+                            subpat: None,
+                        })),
                     })),
                     eq_token: Default::default(),
                     expr: Box::new(condition.to_expr()),
@@ -158,10 +167,12 @@ impl Statement {
                 cond: Box::new(syn::Expr::Let(ExprLet {
                     attrs: vec![],
                     let_token: Default::default(),
-                    pat: Box::new(Pat::Path(PatPath {
+                    pat: Box::new(Pat::Ident(PatIdent {
                         attrs: vec![],
-                        qself: None,
-                        path: Path::new("None").to_syn_path(),
+                        by_ref: None,
+                        mutability: None,
+                        ident: create_ident("None"),
+                        subpat: None,
                     })),
                     eq_token: Default::default(),
                     expr: Box::new(path.to_expr()),
@@ -313,16 +324,28 @@ impl Statement {
     
     pub fn macro_invocation(name: Path, delimiter: MacroDelimiter, arguments: Vec<Expr>) -> Stmt {
         let arguments: Punctuated<syn::Expr, Token![,]> = Punctuated::from_iter(arguments.iter().map(|argument| argument.to_expr()));
-        Stmt::Macro(StmtMacro {
-            attrs: vec![],
-            mac: Macro {
-                path: name.to_syn_path(),
-                bang_token: Default::default(),
-                delimiter,
-                tokens: arguments.to_token_stream(),
-            },
-            semi_token: Some(Default::default()),
-        })
+        Stmt::Expr(
+            syn::Expr::Block(ExprBlock {
+                attrs: vec![],
+                label: None,
+                block: Block {
+                    brace_token: Default::default(),
+                    stmts: vec![
+                        Stmt::Macro(StmtMacro {
+                            attrs: vec![],
+                            mac: Macro {
+                                path: name.to_syn_path(),
+                                bang_token: Default::default(),
+                                delimiter,
+                                tokens: arguments.to_token_stream(),
+                            },
+                            semi_token: Some(Default::default()),
+                        })
+                    ],
+                },
+            }),
+            Some(Default::default())
+        )
     }
     
     pub fn panic(format: String, mut arguments: Vec<Expr>) -> Stmt {
@@ -340,18 +363,39 @@ impl Statement {
         )
     }
     
-    pub fn condition(condition: Expr, then: Vec<Stmt>, or: Expr) -> Stmt {
+    pub fn block(statements: Vec<Stmt>) -> Stmt {
         Stmt::Expr(
-            syn::Expr::If(ExprIf {
+            syn::Expr::Block(ExprBlock {
                 attrs: vec![],
-                if_token: Default::default(),
-                cond: Box::new(condition.to_expr()),
-                then_branch: Block {
+                label: None,
+                block: Block {
                     brace_token: Default::default(),
-                    stmts: then,
+                    stmts: statements,
                 },
-                else_branch: Some((Default::default(), Box::new(or.to_expr()))),
             }),
+            Some(Default::default())
+        )
+    }
+
+    pub fn path(path: Path) -> Stmt {
+        Stmt::Expr(
+            syn::Expr::Path(ExprPath {
+                attrs: vec![],
+                qself: None,
+                path: path.to_syn_path(),
+            }),
+            Some(Default::default())
+        )
+    }
+
+    /// Expression, with or without trailing semicolon.
+    pub fn without_trailling_semi_colon(statement: Stmt) -> Stmt {
+        let expression = match statement {
+            Stmt::Expr(value, _) => value,
+            _ => panic!("Expected expression statement")
+        };
+        Stmt::Expr(
+            expression,
             None
         )
     }

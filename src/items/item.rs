@@ -17,6 +17,22 @@ pub enum Item {
 }
 
 impl Item {
+    pub fn to_syn_item(&self) -> syn::Item {
+        match self {
+            Item::Struct(value) => syn::Item::Struct(value.item.clone()),
+            Item::Enum(value) => syn::Item::Enum(value.item.clone()),
+            Item::Fn(value) => value.item.to_syn_item(),
+            Item::Other(value) => value.item.clone(),
+        }
+    }
+
+    pub fn as_struct_ref(&self) -> Option<&StructItem> {
+        match self {
+            Item::Struct(value) => Some(value),
+            _ => None
+        }
+    }
+
     pub fn as_struct_mut(&mut self) -> Option<&mut StructItem> {
         match self {
             Item::Struct(value) => Some(value),

@@ -97,7 +97,7 @@ impl ModuleItems {
             Some(value) => value,
             None => return,
         };
-        items.impl_items_mut().push(ImplementationItem::new(item.clone()));
+        items.impl_items.push(ImplementationItem::new(item.clone()));
     }
 
     pub fn push_impl_to_enum(&mut self, item: &ItemImpl) {
@@ -163,16 +163,16 @@ impl ModuleItems {
             .collect()
     }
 
-    fn decompose_items(&mut self) -> Vec<syn::Item> {
-        self.items.iter_mut()
+    fn decompose_items(&self) -> Vec<syn::Item> {
+        self.items.iter()
             .flat_map(|item| {
                 match item {
                     Item::Struct(value) => {
-                        let mut impl_items = value.impl_items_mut().iter()
+                        let mut impl_items = value.impl_items.iter()
                             .map(|impl_item| syn::Item::Impl(impl_item.item.clone()))
                             .collect::<Vec<_>>();
                         let mut items = Vec::new();
-                        items.push(syn::Item::Struct(value.item().clone()));
+                        items.push(syn::Item::Struct(value.item.clone()));
                         items.append(&mut impl_items);
                         items
                     }
@@ -187,7 +187,7 @@ impl ModuleItems {
                     }
                     Item::Fn(value) => {
                         let mut items = Vec::new();
-                        match &value.item() {
+                        match &value.item {
                             FnType::Global(value) => items.push(syn::Item::Fn(value.clone())),
                             FnType::Implementation(_) => panic!("Unexpected implementation function"),
                         };
@@ -203,7 +203,7 @@ impl ModuleItems {
             .collect()
     }
 
-    pub fn decompose(&mut self) -> Vec<syn::Item> {
+    pub fn decompose(&self) -> Vec<syn::Item> {
         let mut items = Vec::new();
         items.append(&mut self.decompose_extern_crate_items());
         items.append(&mut self.decompose_use_items());

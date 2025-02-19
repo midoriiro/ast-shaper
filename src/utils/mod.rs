@@ -1,6 +1,6 @@
-pub(crate) mod path;
-pub(crate) mod statement;
-pub(crate) mod punctuated;
+pub mod path;
+pub mod statement;
+pub mod punctuated;
 
 
 use crate::items::source_file::SourceFile;
@@ -34,7 +34,7 @@ pub fn to_pascal_case(name: &str) -> String {
 }
 
 pub fn generate_source_code(source_file: &mut SourceFile, output_path: &std::path::Path, output_filename: &str) {
-    let items = source_file.modules.iter_mut()
+    let items = source_file.modules.iter()
         .flat_map(|module| module.decompose())
         .collect();
     let output_file = syn::File {

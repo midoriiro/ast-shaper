@@ -11,6 +11,15 @@ pub enum FnType {
 }
 
 impl FnType {
+    pub fn to_syn_item(&self) -> syn::Item {
+        match self {
+            FnType::Global(value) => syn::Item::Fn(value.clone()),
+            FnType::Implementation(_) => {
+                panic!("Not a global function");
+            }
+        }
+    }
+    
     pub fn attributes(&self) -> &Vec<Attribute> {
         match self {
             FnType::Global(value) => &value.attrs,
@@ -79,10 +88,6 @@ impl FnItem {
         Self {
             item,
         }
-    }
-
-    pub fn item(&self) -> &FnType {
-        &self.item
     }
 }
 
