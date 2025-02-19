@@ -5,10 +5,10 @@ use crate::items::item::{Item, ItemTrait};
 use crate::items::other_item::OtherItem;
 use crate::items::struct_item::StructItem;
 use crate::items::use_item::UseItem;
+use crate::utils::name_conventions::NamingConventions;
 use crate::utils::path::Path;
 use crate::walkers::Context;
 use syn::{ItemExternCrate, ItemImpl, ItemUse, Type};
-use crate::utils::name_conventions::NamingConventions;
 
 pub struct ModuleItem {
     pub name: String,

@@ -5,7 +5,7 @@ use quote::ToTokens;
 use std::collections::HashMap;
 use syn::punctuated::Punctuated;
 use syn::spanned::Spanned;
-use syn::{Block, ExprAssign, ExprBlock, ExprCall, ExprClosure, ExprField, ExprIf, ExprLet, ExprLit, ExprMacro, ExprMethodCall, ExprPath, ExprReference, ExprStruct, FieldValue, Lit, LitStr, Local, LocalInit, Macro, MacroDelimiter, Member, Pat, PatIdent, PatTupleStruct, PatType, ReturnType, Stmt, StmtMacro, Token};
+use syn::{Block, ExprAssign, ExprBlock, ExprCall, ExprClosure, ExprField, ExprIf, ExprLet, ExprLit, ExprMacro, ExprMethodCall, ExprPath, ExprReference, ExprStruct, FieldValue, Lit, LitStr, Local, LocalInit, Macro, MacroDelimiter, Member, Pat, PatIdent, PatTupleStruct, ReturnType, Stmt, StmtMacro, Token};
 
 #[derive(Debug, Clone)]
 pub enum Expr {

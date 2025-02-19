@@ -8,9 +8,7 @@ pub mod path;
 pub mod punctuated;
 pub mod statement;
 
-use crate::items::source_file::SourceFile;
 use crate::utils::path::Path;
-use std::fs;
 use syn::punctuated::Punctuated;
 use syn::spanned::Spanned;
 use syn::{Ident, ItemUse, Token, UseGlob, UseGroup, UseName, UsePath, UseTree, Visibility};

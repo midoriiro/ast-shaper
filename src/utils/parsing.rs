@@ -1,9 +1,8 @@
-use std::collections::HashMap;
+use crate::items::module_item::ModuleItem;
+use crate::items::source_file::SourceFile;
 use std::fs;
 use std::fs::File;
 use std::io::Read;
-use crate::items::module_item::ModuleItem;
-use crate::items::source_file::SourceFile;
 
 fn parse_source_file<P: ?Sized + AsRef<std::path::Path>>(path: &P) -> SourceFile {
     let mut file = File::open(path)

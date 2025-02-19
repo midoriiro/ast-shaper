@@ -1,5 +1,5 @@
-use rstest::rstest;
 use crate::utils::name_conventions::NamingConventions;
+use rstest::rstest;
 
 #[rstest]
 fn from_camel_case() {

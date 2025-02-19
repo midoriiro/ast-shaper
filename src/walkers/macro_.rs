@@ -1,9 +1,9 @@
+use crate::items::macro_::MacroInvocationArguments;
 use crate::walkers::expr::ExprWalker;
 use crate::walkers::path::PathWalker;
 use crate::walkers::Context;
 use quote::ToTokens;
 use syn::parse2;
-use crate::items::macro_::MacroInvocationArguments;
 
 pub struct MacroWalker;
 
