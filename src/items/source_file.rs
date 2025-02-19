@@ -1,5 +1,5 @@
 use crate::items::item::{Item, ItemTrait};
-use crate::items::module_item::ModuleItems;
+use crate::items::module_item::ModuleItem;
 use crate::utils::path::Path;
 use crate::{debug, functions};
 use itertools::Itertools;
@@ -8,11 +8,11 @@ use syn::Attribute;
 
 pub struct SourceFile {
     pub attributes: Vec<Attribute>,
-    pub modules: Vec<ModuleItems>,
+    pub modules: Vec<ModuleItem>,
 }
 
 impl SourceFile {
-    pub fn new(attributes: Vec<Attribute>, modules: Vec<ModuleItems>) -> Self {
+    pub fn new(attributes: Vec<Attribute>, modules: Vec<ModuleItem>) -> Self {
         Self {
             attributes,
             modules,
@@ -58,20 +58,20 @@ impl SourceFile {
         }
     }
 
-    fn find_module_by_name(&mut self, name: &str) -> Option<&mut ModuleItems> {
+    fn find_module_by_name(&mut self, name: &str) -> Option<&mut ModuleItem> {
         self.modules.iter_mut()
             .find(|module| module.name == name)
     }
 
-    pub fn remove_use_items_starting_with(&mut self, path_prefix: &Path) {
+    pub fn remove_use_items_starting_with(&mut self, prefix: &Path) {
         for module in self.modules.iter_mut() {
-            module.remove_use_items_starting_with(path_prefix);
+            module.remove_use_items_starting_with(prefix);
         }
     }
 
     pub fn merge(&mut self) {
         self.resolve_ident_conflicts();
-        let mut module_result = ModuleItems {
+        let mut module_result = ModuleItem {
             name: "".to_string(),
             file_name: "".to_string(),
             extern_crate_items: Vec::new(),

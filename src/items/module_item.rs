@@ -6,11 +6,11 @@ use crate::items::other_item::OtherItem;
 use crate::items::struct_item::StructItem;
 use crate::items::use_item::UseItem;
 use crate::utils::path::Path;
-use crate::utils::to_pascal_case;
 use crate::walkers::Context;
 use syn::{ItemExternCrate, ItemImpl, ItemUse, Type};
+use crate::utils::name_conventions::NamingConventions;
 
-pub struct ModuleItems {
+pub struct ModuleItem {
     pub name: String,
     pub file_name: String,
     pub extern_crate_items: Vec<ItemExternCrate>,
@@ -18,10 +18,10 @@ pub struct ModuleItems {
     pub items: Vec<Item>,
 }
 
-impl ModuleItems {
+impl ModuleItem {
     pub fn new(name: &str) -> Self {
         Self {
-            name: to_pascal_case(name),
+            name: NamingConventions::to_pascal_case(name),
             file_name: name.to_string(),
             extern_crate_items: Vec::new(),
             use_items: Vec::new(),
@@ -221,7 +221,7 @@ impl ModuleItems {
     }
 }
 
-impl ItemTrait for ModuleItems {
+impl ItemTrait for ModuleItem {
     fn ident(&self) -> String {
         self.name.clone()
     }
@@ -242,9 +242,9 @@ impl ItemTrait for ModuleItems {
     }
 }
 
-impl Clone for ModuleItems {
+impl Clone for ModuleItem {
     fn clone(&self) -> Self {
-        ModuleItems {
+        ModuleItem {
             name: self.name.clone(),
             file_name: self.file_name.clone(),
             extern_crate_items: self.extern_crate_items.clone(),
