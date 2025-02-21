@@ -9,6 +9,7 @@ use crate::walkers::Context;
 use quote::ToTokens;
 use syn::{ImplItem, ItemImpl, Type};
 
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct ImplementationItem {
     pub item: ItemImpl,
     pub functions: Vec<FnItem>,
@@ -73,15 +74,6 @@ impl ItemTrait for ImplementationItem {
         }
         for function in self.functions.iter_mut() {
             function.walk(context);
-        }
-    }
-}
-
-impl Clone for ImplementationItem {
-    fn clone(&self) -> Self {
-        Self {
-            item: self.item.clone(),
-            functions: self.functions.clone(),
         }
     }
 }

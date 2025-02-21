@@ -5,6 +5,7 @@ use crate::walkers::generics::GenericsWalker;
 use crate::walkers::Context;
 use syn::{ItemImpl, ItemStruct};
 
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct StructItem {
     pub item: ItemStruct,
     pub impl_items: Vec<ImplementationItem>,
@@ -32,15 +33,6 @@ impl ItemTrait for StructItem {
         FieldsWalker::walk(&mut self.item.fields, context);
         for impl_item in self.impl_items.iter_mut() {
             impl_item.walk(context);
-        }
-    }
-}
-
-impl Clone for StructItem {
-    fn clone(&self) -> Self {
-        Self {
-            item: self.item.clone(),
-            impl_items: self.impl_items.clone(),
         }
     }
 }

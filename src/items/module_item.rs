@@ -10,6 +10,7 @@ use crate::utils::path::Path;
 use crate::walkers::Context;
 use syn::{ItemExternCrate, ItemImpl, ItemUse, Type};
 
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct ModuleItem {
     pub name: String,
     pub file_name: String,
@@ -21,7 +22,7 @@ pub struct ModuleItem {
 impl ModuleItem {
     pub fn new(name: &str) -> Self {
         Self {
-            name: NamingConventions::to_pascal_case(name),
+            name: NamingConventions::to_camel_case(name),
             file_name: name.to_string(),
             extern_crate_items: Vec::new(),
             use_items: Vec::new(),
@@ -238,18 +239,6 @@ impl ItemTrait for ModuleItem {
             if let Some((_, ref mut rename)) = extern_crate_item.rename {
                 context.predict_ident(rename);
             }
-        }
-    }
-}
-
-impl Clone for ModuleItem {
-    fn clone(&self) -> Self {
-        ModuleItem {
-            name: self.name.clone(),
-            file_name: self.file_name.clone(),
-            extern_crate_items: self.extern_crate_items.clone(),
-            use_items: self.use_items.clone(),
-            items: self.items.clone(),
         }
     }
 }

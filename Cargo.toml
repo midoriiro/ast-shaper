@@ -3,7 +3,7 @@ name = "ast-shaper"
 edition = "2021"
 authors = ["Alexis Bekhdadi <alexis@bekhdadi.com>"]
 license = "Apache-2.0"
-description = "A set of utilities for shaping, transforming, and generating Rust code with syn. "
+description = "A set of utilities for shaping, transforming, and generating Rust code with syn."
 repository = "https://github.com/midoriiro/ast-shaper.git"
 documentation = ""
 keywords = ["ast", "macro", "syn", "tools"]
@@ -12,8 +12,14 @@ version = "0.1.0"
 [dependencies]
 syn = { version = "2.0", features = ["full", "derive", "extra-traits"] }
 quote = "1.0"
+proc-macro2 = "1.0"
 prettyplease = "0.2"
 itertools = "0.14"
+rstest = { version = "0.24", optional = true }
 
 [dev-dependencies]
-rstest = "0.24"
+pretty_assertions = "1.4"
+
+[features]
+default = []
+test = ["dep:rstest"]

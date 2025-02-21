@@ -10,6 +10,7 @@ use crate::walkers::type_param_bound::TypeParamBoundWalker;
 use crate::walkers::Context;
 use syn::TraitItem;
 
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct OtherItem {
     pub item: syn::Item,
 }
@@ -124,14 +125,6 @@ impl ItemTrait for OtherItem {
                 FieldsNamedWalker::walk(&mut value.fields, context);
             }
             _ => panic!("Unsupported type"),
-        }
-    }
-}
-
-impl Clone for OtherItem {
-    fn clone(&self) -> Self {
-        Self {
-            item: self.item.clone(),
         }
     }
 }

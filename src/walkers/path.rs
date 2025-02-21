@@ -1,6 +1,7 @@
+use crate::walkers::angle_bracketed_generic_arguments::AngleBracketedGenericArgumentsWalker;
 use crate::walkers::type_::TypeWalker;
 use crate::walkers::Context;
-use syn::{GenericArgument, PathArguments, ReturnType};
+use syn::{PathArguments, ReturnType};
 
 pub struct PathWalker;
 
@@ -9,17 +10,14 @@ impl PathWalker {
         path: &mut syn::Path,
         context: &mut Context
     ) {
+        if context.path_predicate.is_some() {
+            context.predict_path(path);
+            return;
+        }        
         fn walk_in_generic_arguments(path_segment: &mut syn::PathSegment, context: &mut Context) {
             match path_segment.arguments {
                 PathArguments::AngleBracketed(ref mut value) => {
-                    for argument in value.args.iter_mut() {
-                        match argument {
-                            GenericArgument::Type(value) => {
-                                TypeWalker::walk(value, context);
-                            }
-                            _ => {}
-                        }
-                    };
+                    AngleBracketedGenericArgumentsWalker::walk(value, context);
                 }
                 PathArguments::Parenthesized(ref mut value) => {
                     match value.output {

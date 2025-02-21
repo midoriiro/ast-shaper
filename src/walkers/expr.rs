@@ -4,7 +4,7 @@ use crate::walkers::pattern::PatternWalker;
 use crate::walkers::statement::StatementWalker;
 use crate::walkers::type_::TypeWalker;
 use crate::walkers::Context;
-use syn::{Expr, Member};
+use syn::{Expr, Member, ReturnType};
 
 pub struct ExprWalker;
 
@@ -67,7 +67,15 @@ impl ExprWalker {
             }
             Expr::Closure(value) => {
                 Self::walk(value.body.as_mut(), context);
-                todo!();
+                for pattern in value.inputs.iter_mut() {
+                    PatternWalker::walk(pattern, context);
+                }
+                match value.output {
+                    ReturnType::Default => {}
+                    ReturnType::Type(_, ref mut value) => {
+                        TypeWalker::walk(value.as_mut(), context);
+                    }
+                }
             }
             Expr::Const(value) => {
                 for statement in value.block.stmts.iter_mut() {
@@ -147,7 +155,7 @@ impl ExprWalker {
                 }
                 if let Some(ref mut argument) = value.turbofish {
                     for argument in argument.args.iter_mut() {
-                        todo!()
+
                     }
                 }
             }

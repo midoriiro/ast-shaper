@@ -3,6 +3,7 @@ use quote::ToTokens;
 use std::collections::VecDeque;
 use syn::UseTree;
 
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct UseItem(pub syn::ItemUse);
 
 impl UseItem {
@@ -77,11 +78,5 @@ impl UseItem {
 
     pub fn to_string(&self) -> String {
         self.0.tree.to_token_stream().to_string()
-    }
-}
-
-impl Clone for UseItem {
-    fn clone(&self) -> Self {
-        Self(self.0.clone())
     }
 }

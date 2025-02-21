@@ -5,6 +5,7 @@ use crate::walkers::Context;
 use std::ops::{Deref, DerefMut};
 use syn::{Attribute, Block, ImplItemFn, ItemFn, Signature, Token, Visibility};
 
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum FnType {
     Global(ItemFn),
     Implementation(ImplItemFn),
@@ -70,15 +71,7 @@ impl FnType {
     }
 }
 
-impl Clone for FnType {
-    fn clone(&self) -> Self {
-        match self {
-            FnType::Global(value) => FnType::Global(value.clone()),
-            FnType::Implementation(value) => FnType::Implementation(value.clone())
-        }
-    }
-}
-
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct FnItem {
     pub item: FnType,
 }
@@ -124,14 +117,6 @@ impl ItemTrait for FnItem {
                 }
                 SignatureWalker::walk(&mut value.sig, context);
             }
-        }
-    }
-}
-
-impl Clone for FnItem {
-    fn clone(&self) -> Self {
-        Self {
-            item: self.item.clone(),
         }
     }
 }

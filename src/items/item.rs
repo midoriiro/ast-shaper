@@ -9,6 +9,7 @@ pub trait ItemTrait {
     fn walk(&mut self, context: &mut Context);
 }
 
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub enum Item {
     Struct(StructItem),
     Enum(EnumItem),
@@ -57,17 +58,6 @@ impl ItemTrait for Item {
             Item::Enum(value) => value.walk(context),
             Item::Fn(value) => value.walk(context),
             Item::Other(value) => value.walk(context),
-        }
-    }
-}
-
-impl Clone for Item {
-    fn clone(&self) -> Self {
-        match self {
-            Item::Struct(value) => Item::Struct(value.clone()),
-            Item::Enum(value) => Item::Enum(value.clone()),
-            Item::Fn(value) => Item::Fn(value.clone()),
-            Item::Other(value) => Item::Other(value.clone()),
         }
     }
 }

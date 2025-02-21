@@ -1,5 +1,9 @@
-pub mod utils;
-pub mod error;
+pub mod functions;
 pub mod items;
-pub(crate) mod functions;
-pub(crate) mod walkers;
+
+#[cfg(feature = "test")]
+pub mod test_utils;
+
+pub mod utils;
+pub mod walkers;
+pub mod error;

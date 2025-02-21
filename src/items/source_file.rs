@@ -6,6 +6,7 @@ use itertools::Itertools;
 use std::collections::HashMap;
 use syn::Attribute;
 
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct SourceFile {
     pub attributes: Vec<Attribute>,
     pub modules: Vec<ModuleItem>,
@@ -125,14 +126,5 @@ impl SourceFile {
             .map(|item| item.clone())
             .collect();
         self.modules = vec![module_result]
-    }
-}
-
-impl Clone for SourceFile {
-    fn clone(&self) -> Self {
-        Self {
-            attributes: self.attributes.clone(),
-            modules: self.modules.clone(),
-        }
     }
 }

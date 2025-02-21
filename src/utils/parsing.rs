@@ -1,19 +1,15 @@
 use crate::items::module_item::ModuleItem;
 use crate::items::source_file::SourceFile;
+use proc_macro2::TokenStream;
+use quote::ToTokens;
 use std::fs;
 use std::fs::File;
 use std::io::Read;
+use syn::parse2;
 
-fn parse_source_file<P: ?Sized + AsRef<std::path::Path>>(path: &P) -> SourceFile {
-    let mut file = File::open(path)
-        .expect("Unable to open file");
-    let mut src = String::new();
-    file.read_to_string(&mut src)
-        .expect("Unable to read file");
-    let syntax = syn::parse_file(&src)
-        .expect("Unable to parse file");
-    let mut module = ModuleItem::new(path.as_ref().file_stem().unwrap().to_str().unwrap());
-    for item in syntax.items {
+fn parse_module(source_file: syn::File, module_name: &str) -> SourceFile {
+    let mut module = ModuleItem::new(module_name);
+    for item in source_file.items {
         match item {
             syn::Item::ExternCrate(value) => {
                 module.push_extern_crate_item(value);
@@ -46,9 +42,38 @@ fn parse_source_file<P: ?Sized + AsRef<std::path::Path>>(path: &P) -> SourceFile
         }
     }
     let source_file = SourceFile::new(
-        syntax.attrs.clone(),
+        source_file.attrs.clone(),
         vec![module]
     );
+    source_file
+}
+
+fn parse_source_file<P: ?Sized + AsRef<std::path::Path>>(path: &P) -> SourceFile {
+    let mut file = File::open(path)
+        .expect("Unable to open file");
+    let mut src = String::new();
+    file.read_to_string(&mut src)
+        .expect("Unable to read file");
+    let syntax = syn::parse_file(&src)
+        .expect("Unable to parse file");
+    let source_file = parse_module(
+        syntax,
+        path.as_ref().file_stem().unwrap().to_str().unwrap()
+    );
+    source_file
+}
+
+fn unparse_module(source_file: &SourceFile) -> syn::File {
+    let source_file = syn::File {
+        shebang: None,
+        attrs: source_file.attributes.clone(),
+        items: source_file.modules.iter()
+            .map(|item| {
+                item.decompose()
+            })
+            .flatten()
+            .collect::<Vec<_>>(),
+    };
     source_file
 }
 
@@ -74,7 +99,7 @@ fn unparse_item(item: &syn::Item) -> String {
 }
 
 fn write_code<P: ?Sized + AsRef<std::path::Path>>(code: &String, path: &P) {
-    fs::create_dir_all(path)
+    fs::create_dir_all(path.as_ref().parent().unwrap())
         .expect("Unable to create output directory");
     fs::write(path, code)
         .expect("Unable to write generated file");
@@ -132,5 +157,26 @@ impl PathExt for std::path::PathBuf {
         let mut source_files = Vec::new();
         walk_path(self, &mut source_files);
         source_files
+    }
+}
+
+pub trait TokenStreamExt {
+    fn parse(&self) -> SourceFile;
+}
+
+impl TokenStreamExt for TokenStream {
+    fn parse(&self) -> SourceFile {
+        let source_file: syn::File = parse2(self.clone()).unwrap();
+        parse_module(source_file, "anonymous")
+    }
+}
+
+pub trait SourceFileExt {
+    fn unparse(&self) -> TokenStream;
+}
+
+impl SourceFileExt for SourceFile {
+    fn unparse(&self) -> TokenStream {
+        unparse_module(self).to_token_stream()
     }
 }

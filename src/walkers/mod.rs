@@ -3,6 +3,7 @@ pub mod statement;
 pub mod type_;
 pub mod macro_;
 pub mod pattern;
+pub mod generic_argument;
 pub mod generic_param;
 pub mod type_param_bound;
 pub mod where_clause;
@@ -10,6 +11,7 @@ pub mod signature;
 pub mod generics;
 pub mod fields;
 pub mod path;
+pub mod angle_bracketed_generic_arguments;
 
 pub struct Context {
     pub(crate) type_predicate: Option<Box<dyn FnMut(&mut syn::Type) -> bool>>,

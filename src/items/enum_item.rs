@@ -6,6 +6,7 @@ use crate::walkers::generics::GenericsWalker;
 use crate::walkers::Context;
 use syn::{ItemEnum, ItemImpl};
 
+#[derive(Debug, Clone, Eq, PartialEq)]
 pub struct EnumItem {
     pub item: ItemEnum,
     pub impl_items: Vec<ImplementationItem>,
@@ -39,15 +40,6 @@ impl ItemTrait for EnumItem {
         }
         for impl_item in self.impl_items.iter_mut() {
             impl_item.walk(context);
-        }
-    }
-}
-
-impl Clone for EnumItem {
-    fn clone(&self) -> Self {
-        Self {
-            item: self.item.clone(),
-            impl_items: self.impl_items.clone(),
         }
     }
 }
